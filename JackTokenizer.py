@@ -119,6 +119,7 @@ class JackTokenizer:
         self.curr_place = -1
         self.token_index = 0
         self.in_comment = False
+        self.EOT = False
 
     def remove_comments_spaces(self, line) -> str:
         """removes comments from input files"""
@@ -166,10 +167,12 @@ class JackTokenizer:
 
     def read_line(self):
         """get the tokens from the line"""
-
+        self.tokens = []
         self.input_lines[self.curr_place] = self.remove_comments_spaces(self.input_lines[self.curr_place])
         for word in self.split_line():
             self.tokenize_word(word)
+        if self.curr_place == len(self.input_lines) - 1:
+            self.EOT = True
 
     def has_more_tokens(self) -> bool:
         """Do we have more tokens in the input?
@@ -184,14 +187,12 @@ class JackTokenizer:
         This method should be called if has_more_tokens() is true. 
         Initially there is no current token.
         """
-        if self.curr_place == -1 or self.token_index == len(self.tokens):
+        self.token_index += 1
+        if self.token_index >= len(self.tokens) or self.curr_place == -1:
             self.curr_place += 1
-            self.read_line()
             self.token_index = 0
-        else:
-            self.token_index += 1
-            if self.token_index == len(self.tokens):
-                self.advance()
+            self.read_line()
+
 
     def token_type(self, word):
         """
