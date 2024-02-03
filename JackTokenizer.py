@@ -141,7 +141,7 @@ class JackTokenizer:
 
         while index < len(this_line):
             if this_line[index] in JackTokenizer.SYMBOLS:
-                cur_str, index = self.check_and_append(cur_str, this_line[index], terms_lst, index)
+                cur_str, index = self.check_and_append(cur_str, this_line[index], terms_lst, index + 1)
             elif this_line[index] == '"':
                 term = this_line[index:this_line[index + 1:].find('"') + index + 2]
                 cur_str, index = self.check_and_append(cur_str, term, terms_lst, index + len(term))
@@ -161,7 +161,8 @@ class JackTokenizer:
         return cur_str, new_index
 
     def tokenize_word(self, word):
-        self.tokens.append(self.token_type(word))
+        if word != "" or word != '':
+            self.tokens.append(self.token_type(word))
 
     def read_line(self):
         """get the tokens from the line"""
@@ -205,7 +206,7 @@ class JackTokenizer:
             return 'symbol', word
         elif word in JackTokenizer.special_symbols_dict:
             return 'symbol', JackTokenizer.special_symbols_dict[word]
-        elif self.current_token.isnumeric():
+        elif word.isnumeric():
             return 'integerConstant', word
         elif word[0] == '"' and word[-1] == '"' and "\n" not in word[1:-1] and '"' not in word[1:-1]:
             return 'stringConstant', word
